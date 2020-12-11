@@ -47,8 +47,8 @@ def run_it():
     # model
 
     model = Sequential([
-        Dense(units=160, input_shape=(1,), activation='relu'),
-        Dense(units=320, activation='relu'),
+        Dense(units=16, input_shape=(1,), activation='relu'),
+        Dense(units=32, activation='relu'),
         Dense(units=2, activation='softmax')
     ])
 
@@ -58,7 +58,44 @@ def run_it():
 
     model.compile(optimizer=Adam(learning_rate=0.0001), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-    model.fit(x=scaled_train_sample, y=train_labels, validation_split=0.1, batch_size=10, epochs=300, shuffle=True, verbose=2)
+    model.fit(x=scaled_train_sample, y=train_labels, validation_split=0.1, batch_size=10, epochs=30, shuffle=True, verbose=2)
+
+    # inferance
+    l_test_labels = []
+    l_test_samples = []
+
+    for i in range(50):
+        random_young = randint(13, 64)
+        l_test_samples.append(random_young)
+        l_test_labels.append(1)
+
+        random_old = randint(65, 100)
+        l_test_samples.append(random_old)
+        l_test_labels.append(0)
+
+    for i in range(950):
+        random_young = randint(13, 64)
+        l_test_samples.append(random_young)
+        l_test_labels.append(0)
+
+        random_old = randint(65, 100)
+        l_test_samples.append(random_old)
+        l_test_labels.append(1)
+
+        test_labels = np.array(l_test_labels)
+        test_samples = np.array(l_test_samples)
+
+    test_labels, test_samples = shuffle(test_labels, test_samples)
+
+    scaled_test_sample = scaler.fit_transform(test_samples.reshape(-1, 1))
+
+    predictions = model.predict(x=scaled_test_sample, batch_size=10, verbose=0)
+
+    j = 0
+    for i in predictions:
+        print(i)
+        print(test_samples[j])
+        j=j+1
 
 
 if __name__ == '__main__':
